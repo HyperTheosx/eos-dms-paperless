@@ -1,6 +1,8 @@
 # --- macOS ---
 .DS_Store
 
+AGENTS.md
+
 # --- Env / secrets ---
 .env
 .env.*
