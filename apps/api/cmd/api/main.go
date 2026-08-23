@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/hypertheosx/eos-dms-paperless/apps/api/internal/adapters/driving/rest"
 	"github.com/hypertheosx/eos-dms-paperless/apps/api/internal/config"
 )
 
@@ -32,12 +33,9 @@ func run() error {
 	logger := newLogger(cfg.Logger)
 	slog.SetDefault(logger)
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /healthz", handleHealthz)
-
 	srv := &http.Server{
 		Addr:              cfg.HTTP.Addr(),
-		Handler:           mux,
+		Handler:           rest.NewRouter(logger),
 		ReadHeaderTimeout: cfg.HTTP.ReadTimeout,
 		ReadTimeout:       cfg.HTTP.ReadTimeout,
 		WriteTimeout:      cfg.HTTP.WriteTimeout,
@@ -92,9 +90,4 @@ func newLogger(cfg config.LoggerConfig) *slog.Logger {
 		handler = slog.NewJSONHandler(os.Stdout, opts)
 	}
 	return slog.New(handler)
-}
-
-func handleHealthz(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	fmt.Fprintln(w, `{"status":"ok"}`)
 }
